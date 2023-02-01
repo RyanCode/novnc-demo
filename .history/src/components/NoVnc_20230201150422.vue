@@ -50,6 +50,6 @@ export default {
 </script>
 <style>
 #screen div canvas{
-  cursor: auto !important;
+  overflow: auto;
 }
 </style>

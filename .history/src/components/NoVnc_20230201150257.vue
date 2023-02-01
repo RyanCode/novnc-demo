@@ -10,7 +10,7 @@ export default {
   },
   data() {
     return {
-      path: "ws://192.168.20.42:11223",
+      path: "ws://192.168.20.42:123456",
     };
   },
   methods: {
@@ -48,8 +48,8 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
 #screen div canvas{
-  cursor: auto !important;
+  overflow: auto;
 }
 </style>

@@ -48,8 +48,8 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
 #screen div canvas{
-  cursor: auto !important;
+  overflow: auto;
 }
 </style>
