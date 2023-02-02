@@ -5,13 +5,19 @@
 <script>
 import RFB from "@novnc/novnc/core/rfb";
 export default {
-  mounted() {
-    this.connectVnc();
-  },
   data() {
     return {
       path: "ws://192.168.20.42:11223",
+      rfb: null,
     };
+  },
+  mounted() {
+    this.connectVnc();
+    document.getElementsByTagName("canvas")[0].addEventListener("keydown", (e) => {
+      if (e.ctrlKey && e.code === "KeyV") {
+        this.clipboardPasteFrom();
+      }
+    });
   },
   methods: {
     // vnc连接断开的回调函数
@@ -24,7 +30,7 @@ export default {
         console.log("链接失败,重新链接中-------" + msg);
         setTimeout(() => {
           this.connectVnc();
-        },10000);
+        }, 10000);
       }
     },
     // 连接成功的回调函数
@@ -34,22 +40,27 @@ export default {
     //连接vnc的函数
     connectVnc() {
       const PASSWORD = "admin";
-      let rfb = new RFB(document.getElementById("screen"), this.path, {
+      (this.rfb = new RFB(document.getElementById("screen"), this.path, {
         // 向vnc 传递的一些参数，比如说虚拟机的开机密码等
         credentials: { password: PASSWORD },
-      });
-      rfb.addEventListener("connect", this.connectedToServer);
-      rfb.addEventListener("disconnect", this.disconnectedFromServer);
-      rfb.scaleViewport = false; //scaleViewport指示是否应在本地扩展远程会话以使其适合其容器。禁用时，如果远程会话小于其容器，则它将居中，或者根据clipViewport它是否更大来处理。默认情况下禁用。
-      rfb.resizeSession = false; //是一个boolean指示是否每当容器改变尺寸应被发送到调整远程会话的请求。默认情况下禁用
-      console.log(rfb);
-      this.rfb = rfb;
+      })),
+        this.rfb.addEventListener("connect", this.connectedToServer);
+      this.rfb.addEventListener("disconnect", this.disconnectedFromServer);
+      this.rfb.scaleViewport = false; //scaleViewport指示是否应在本地扩展远程会话以使其适合其容器。禁用时，如果远程会话小于其容器，则它将居中，或者根据clipViewport它是否更大来处理。默认情况下禁用。
+      this.rfb.resizeSession = false; //是一个boolean指示是否每当容器改变尺寸应被发送到调整远程会话的请求。默认情况下禁用
+      console.log(this.rfb);
+    },
+
+    async clipboardPasteFrom() {
+      const string = await navigator.clipboard.readText();
+      console.log("发送数据", string);
+      this.rfb.clipboardPasteFrom(string);
     },
   },
 };
 </script>
 <style>
-#screen div canvas{
+#screen div canvas {
   cursor: auto !important;
 }
 </style>
